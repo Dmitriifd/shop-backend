@@ -55,7 +55,8 @@ const addOrderItems = asyncHandler(async (req, res) => {
  * @access  Private
  */
 const getMyOrders = asyncHandler(async (req, res) => {
-  res.json('get my orders')
+  const orders = await Order.find({ user: req.user._id });
+  res.json(orders)
 });
 
 /**
