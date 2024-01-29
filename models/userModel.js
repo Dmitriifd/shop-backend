@@ -7,6 +7,11 @@ const userSchema = mongoose.Schema(
       type: String,
       required: true,
     },
+    surname: {
+      type: String,
+      required: false,
+      default: '',
+    },
     email: {
       type: String,
       required: true,
@@ -21,10 +26,27 @@ const userSchema = mongoose.Schema(
       required: true,
       default: false,
     },
+    phone: {
+      type: String,
+      required: false,
+      default: '',
+    },
+    address: {
+      city: {
+        type: String,
+        required: false,
+        default: '',
+      },
+      street: {
+        type: String,
+        required: false,
+        default: '',
+      },
+    },
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 userSchema.methods.matchPassword = async function (enteredPassword) {

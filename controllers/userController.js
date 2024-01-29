@@ -23,7 +23,7 @@ const authUser = asyncHandler(async (req, res) => {
     });
   } else {
     res.status(401);
-    throw new Error('Invalid email or password');
+    throw new Error('Неправильный email или password');
   }
 });
 
@@ -88,8 +88,11 @@ const getUserProfile = asyncHandler(async (req, res) => {
     res.json({
       _id: user._id,
       name: user.name,
+      surname: user.surname,
       email: user.email,
       isAdmin: user.isAdmin,
+      phone: user.phone,
+      address: user.address,
     });
   } else {
     res.status(404);
@@ -107,7 +110,10 @@ const updateUserProfile = asyncHandler(async (req, res) => {
 
   if (user) {
     user.name = req.body.name || user.name;
+    user.surname = req.body.surname || user.surname;
+    user.phone = req.body.phone || user.phone;
     user.email = req.body.email || user.email;
+    user.address = req.body.address || user.address;
 
     if (req.body.password) {
       user.password = req.body.password;
@@ -118,8 +124,11 @@ const updateUserProfile = asyncHandler(async (req, res) => {
     res.json({
       _id: updatedUser._id,
       name: updatedUser.name,
+      surname: updatedUser.surname,
+      phone: updatedUser.phone,
       email: updatedUser.email,
       isAdmin: updatedUser.isAdmin,
+      address: updatedUser.address,
     });
   } else {
     res.status(404);
