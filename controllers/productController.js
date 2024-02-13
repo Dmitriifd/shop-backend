@@ -30,6 +30,25 @@ const getProducts = asyncHandler(async (req, res) => {
   res.json({ products, page, pages: Math.ceil(count / pageSize) });
 });
 
+const getProductsByCategory = asyncHandler(async (req, res) => {
+  const pageSize = process.env.PAGINATION_LIMIT || 10;
+  const page = Number(req.query.pageNumber) || 1;
+
+  const category = req.params.category;
+  const keyword = category
+    ? {
+        category: category,
+      }
+    : {};
+
+  const count = await Product.countDocuments({ ...keyword });
+  const products = await Product.find({ ...keyword })
+    .limit(pageSize)
+    .skip(pageSize * (page - 1));
+
+  res.json({ products, category, page, pages: Math.ceil(count / pageSize) });
+});
+
 /**
  * @desc    Get product by ID
  * @route   GET /api/products/:id
@@ -51,16 +70,19 @@ const getProductById = asyncHandler(async (req, res) => {
  * @access  Private/Admin
  */
 const createProduct = asyncHandler(async (req, res) => {
+  const { name, price, description, image, brand, category, countInStock, colors, char } = req.body;
   const product = new Product({
-    name: 'Sample name',
-    price: 0,
+    name,
+    price,
     user: req.user._id,
-    image: '/images/sample.jpg',
-    brand: 'Sample brand',
-    category: 'Sample category',
-    countInStock: 0,
+    image,
+    brand,
+    category,
+    countInStock,
     numReviews: 0,
-    description: 'Sample description',
+    description,
+    colors,
+    char,
   });
 
   const createdProduct = await product.save();
@@ -73,7 +95,7 @@ const createProduct = asyncHandler(async (req, res) => {
  * @access  Private/Admin
  */
 const updateProduct = asyncHandler(async (req, res) => {
-  const { name, price, description, image, brand, category, countInStock } = req.body;
+  const { name, price, description, image, brand, category, countInStock, colors, char } = req.body;
 
   const product = await Product.findById(req.params.id);
 
@@ -85,6 +107,8 @@ const updateProduct = asyncHandler(async (req, res) => {
     product.brand = brand;
     product.category = category;
     product.countInStock = countInStock;
+    product.colors = colors;
+    product.char = char;
 
     const updatedProduct = await product.save();
     res.json(updatedProduct);
@@ -178,5 +202,6 @@ export {
   updateProduct,
   deleteProduct,
   createProductReview,
-  getTopProducts
+  getTopProducts,
+  getProductsByCategory
 };
