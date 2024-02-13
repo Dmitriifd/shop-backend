@@ -10,7 +10,7 @@ import { verifyPayPalPayment, checkIfNewTransaction } from '../utils/paypal.js';
  * @access  Private
  */
 const addOrderItems = asyncHandler(async (req, res) => {
-  const { orderItems, shippingAddress, paymentMethod } = req.body;
+  const { orderItems, shippingAddress } = req.body;
 
   if (orderItems && orderItems.length === 0) {
     res.status(400);
@@ -39,7 +39,6 @@ const addOrderItems = asyncHandler(async (req, res) => {
       orderItems: dbOrderItems,
       user: req.user._id,
       shippingAddress,
-      paymentMethod,
       itemsPrice,
       taxPrice,
       shippingPrice,
