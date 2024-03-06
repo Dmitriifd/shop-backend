@@ -41,12 +41,35 @@ const getProductsByCategory = asyncHandler(async (req, res) => {
       }
     : {};
 
+  // Находим минимальную и максимальную стоимость товаров в данной категории
+  const minMaxPrice = await Product.aggregate([
+    { $match: { ...keyword } },
+    {
+      $group: {
+        _id: null,
+        minPrice: { $min: "$price" },
+        maxPrice: { $max: "$price" },
+      },
+    },
+  ]);
+
   const count = await Product.countDocuments({ ...keyword });
   const products = await Product.find({ ...keyword })
     .limit(pageSize)
     .skip(pageSize * (page - 1));
 
-  res.json({ products, category, page, pages: Math.ceil(count / pageSize) });
+  if (products.length === 0) {
+    res.status(404);
+  }
+
+  res.json({
+    products,
+    category,
+    page,
+    pages: Math.ceil(count / pageSize),
+    minPrice: minMaxPrice.length > 0 ? minMaxPrice[0].minPrice : null,
+    maxPrice: minMaxPrice.length > 0 ? minMaxPrice[0].maxPrice : null,
+  });
 });
 
 /**
