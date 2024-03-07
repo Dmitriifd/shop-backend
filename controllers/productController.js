@@ -261,6 +261,7 @@ const getAllColors = asyncHandler(async (req, res) => {
  */
 const getAllYears = asyncHandler(async (req, res) => {
   const years = await Product.aggregate([
+    { $match: { year: { $ne: null } } },
     { $group: { _id: '$year' } },
     { $project: { _id: 0, year: '$_id' } },
   ]);
