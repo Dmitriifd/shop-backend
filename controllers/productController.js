@@ -224,7 +224,6 @@ const getTopProducts = asyncHandler(async (req, res) => {
  * @access Public
  */
 const getAllBrands = asyncHandler(async (req, res) => {
-  // Используем агрегацию для получения уникальных значений поля 'brand'
   const brands = await Product.aggregate([
      { $group: { _id: "$brand" } },
      { $project: { _id: 0, brand: "$_id" } },
@@ -233,6 +232,39 @@ const getAllBrands = asyncHandler(async (req, res) => {
   const brandNames = brands.map(brand => brand.brand);
 
   res.json(brandNames);
+ });
+
+ /**
+ * @desc    Get all colors
+ * @route   GET /api/products/colors
+ * @access Public
+ */
+const getAllColors = asyncHandler(async (req, res) => {
+  const colors = await Product.aggregate([
+     { $unwind: "$colors" },
+     { $group: { _id: "$colors" } },
+     { $project: { _id: 0, color: "$_id" } },
+  ]);
+
+  const colorNames = colors.map(color => color.color);
+
+  res.json(colorNames);
+ });
+
+ /**
+ * @desc    Get all years
+ * @route   GET /api/products/years
+ * @access Public
+ */
+const getAllYears = asyncHandler(async (req, res) => {
+  const years = await Product.aggregate([
+     { $group: { _id: "$year" } },
+     { $project: { _id: 0, year: "$_id" } },
+  ]);
+
+  const yearNames = years.map(year => year.year);
+
+  res.json(yearNames);
  });
 
 export {
@@ -244,5 +276,7 @@ export {
   createProductReview,
   getTopProducts,
   getProductsByCategory,
-  getAllBrands
+  getAllBrands,
+  getAllColors,
+  getAllYears
 };
