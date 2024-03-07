@@ -218,6 +218,23 @@ const getTopProducts = asyncHandler(async (req, res) => {
   res.json(products);
 });
 
+/**
+ * @desc    Get all brands
+ * @route   GET /api/products/brands
+ * @access Public
+ */
+const getAllBrands = asyncHandler(async (req, res) => {
+  // Используем агрегацию для получения уникальных значений поля 'brand'
+  const brands = await Product.aggregate([
+     { $group: { _id: "$brand" } },
+     { $project: { _id: 0, brand: "$_id" } },
+  ]);
+
+  const brandNames = brands.map(brand => brand.brand);
+
+  res.json(brandNames);
+ });
+
 export {
   getProducts,
   getProductById,
@@ -226,5 +243,6 @@ export {
   deleteProduct,
   createProductReview,
   getTopProducts,
-  getProductsByCategory
+  getProductsByCategory,
+  getAllBrands
 };
