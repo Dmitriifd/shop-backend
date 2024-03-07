@@ -47,8 +47,8 @@ const getProductsByCategory = asyncHandler(async (req, res) => {
     {
       $group: {
         _id: null,
-        minPrice: { $min: "$price" },
-        maxPrice: { $max: "$price" },
+        minPrice: { $min: '$price' },
+        maxPrice: { $max: '$price' },
       },
     },
   ]);
@@ -93,7 +93,7 @@ const getProductById = asyncHandler(async (req, res) => {
  * @access  Private/Admin
  */
 const createProduct = asyncHandler(async (req, res) => {
-  const { name, price, description, image, brand, category, countInStock, colors, char } = req.body;
+  const { name, price, description, image, brand, category, countInStock, colors, char, year } = req.body;
   const product = new Product({
     name,
     price,
@@ -106,6 +106,7 @@ const createProduct = asyncHandler(async (req, res) => {
     description,
     colors,
     char,
+    year,
   });
 
   const createdProduct = await product.save();
@@ -118,7 +119,8 @@ const createProduct = asyncHandler(async (req, res) => {
  * @access  Private/Admin
  */
 const updateProduct = asyncHandler(async (req, res) => {
-  const { name, price, description, image, brand, category, countInStock, colors, char } = req.body;
+  const { name, price, description, image, brand, category, countInStock, colors, char, year } =
+    req.body;
 
   const product = await Product.findById(req.params.id);
 
@@ -132,6 +134,7 @@ const updateProduct = asyncHandler(async (req, res) => {
     product.countInStock = countInStock;
     product.colors = colors;
     product.char = char;
+    product.year = year;
 
     const updatedProduct = await product.save();
     res.json(updatedProduct);
@@ -177,7 +180,7 @@ const createProductReview = asyncHandler(async (req, res) => {
 
   if (product) {
     const alreadyReviewed = product.reviews.find(
-      (r) => r.user.toString() === req.user._id.toString()
+      (r) => r.user.toString() === req.user._id.toString(),
     );
 
     if (alreadyReviewed) {
@@ -225,47 +228,47 @@ const getTopProducts = asyncHandler(async (req, res) => {
  */
 const getAllBrands = asyncHandler(async (req, res) => {
   const brands = await Product.aggregate([
-     { $group: { _id: "$brand" } },
-     { $project: { _id: 0, brand: "$_id" } },
+    { $group: { _id: '$brand' } },
+    { $project: { _id: 0, brand: '$_id' } },
   ]);
 
-  const brandNames = brands.map(brand => brand.brand);
+  const brandNames = brands.map((brand) => brand.brand);
 
   res.json(brandNames);
- });
+});
 
- /**
+/**
  * @desc    Get all colors
  * @route   GET /api/products/colors
  * @access Public
  */
 const getAllColors = asyncHandler(async (req, res) => {
   const colors = await Product.aggregate([
-     { $unwind: "$colors" },
-     { $group: { _id: "$colors" } },
-     { $project: { _id: 0, color: "$_id" } },
+    { $unwind: '$colors' },
+    { $group: { _id: '$colors' } },
+    { $project: { _id: 0, color: '$_id' } },
   ]);
 
-  const colorNames = colors.map(color => color.color);
+  const colorNames = colors.map((color) => color.color);
 
   res.json(colorNames);
- });
+});
 
- /**
+/**
  * @desc    Get all years
  * @route   GET /api/products/years
  * @access Public
  */
 const getAllYears = asyncHandler(async (req, res) => {
   const years = await Product.aggregate([
-     { $group: { _id: "$year" } },
-     { $project: { _id: 0, year: "$_id" } },
+    { $group: { _id: '$year' } },
+    { $project: { _id: 0, year: '$_id' } },
   ]);
 
-  const yearNames = years.map(year => year.year);
+  const yearNames = years.map((year) => year.year);
 
   res.json(yearNames);
- });
+});
 
 export {
   getProducts,
@@ -278,5 +281,5 @@ export {
   getProductsByCategory,
   getAllBrands,
   getAllColors,
-  getAllYears
+  getAllYears,
 };
