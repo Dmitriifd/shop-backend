@@ -232,7 +232,7 @@ const getAllBrands = asyncHandler(async (req, res) => {
     { $project: { _id: 0, brand: '$_id' } },
   ]);
 
-  const brandNames = brands.map((brand) => brand.brand);
+  const brandNames = brands.map((brand) => brand.brand).sort();
 
   res.json(brandNames);
 });
